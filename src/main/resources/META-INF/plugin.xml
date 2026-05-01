@@ -1,0 +1,16 @@
+<idea-plugin>
+    <id>dev.flowicons.jetbrains</id>
+    <name>Flow Icons</name>
+    <vendor url="https://flow-icons.pages.dev">Flow Icons</vendor>
+
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationService serviceImplementation="dev.flowicons.jetbrains.FlowIconsSettings"/>
+        <applicationConfigurable
+                instance="dev.flowicons.jetbrains.FlowIconsConfigurable"
+                id="dev.flowicons.jetbrains.settings"
+                displayName="Flow Icons"/>
+        <fileIconProvider implementation="dev.flowicons.jetbrains.FlowIconsFileIconProvider" order="first"/>
+    </extensions>
+</idea-plugin>

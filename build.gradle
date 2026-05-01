@@ -1,0 +1,52 @@
+plugins {
+    id "java"
+    id "org.jetbrains.intellij.platform" version "2.14.0"
+}
+
+group = "dev.flowicons"
+version = "0.1.0"
+
+repositories {
+    mavenCentral()
+    intellijPlatform {
+        defaultRepositories()
+    }
+}
+
+dependencies {
+    implementation files("libs/gson.jar")
+    implementation files("libs/brotli.dec.jar")
+
+    intellijPlatform {
+        local("C:/Program Files/JetBrains/DataGrip 2025.3.5")
+    }
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+intellijPlatform {
+    buildSearchableOptions = false
+    instrumentCode = false
+
+    pluginConfiguration {
+        id = "dev.flowicons.jetbrains"
+        name = "Flow Icons"
+        version = project.version
+
+        description = """
+            Flow Icons file and folder icon theme for JetBrains IDEs.
+        """.stripIndent().trim()
+
+        ideaVersion {
+            sinceBuild = "253"
+        }
+
+        changeNotes = """
+            Initial JetBrains IDE port using the Flow Icons Zed icon mappings.
+        """.stripIndent().trim()
+    }
+}
