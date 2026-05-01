@@ -18,7 +18,11 @@ dependencies {
     implementation files("libs/brotli.dec.jar")
 
     intellijPlatform {
-        local("C:/Program Files/JetBrains/DataGrip 2025.3.5")
+        if (project.hasProperty("localIdePath")) {
+            local(localIdePath)
+        } else {
+            intellijIdeaCommunity("2025.3")
+        }
     }
 }
 

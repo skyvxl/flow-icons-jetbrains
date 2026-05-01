@@ -55,8 +55,10 @@ You need:
 Build the plugin:
 
 ```powershell
-gradle buildPlugin
+gradle buildPlugin -PlocalIdePath="C:/Program Files/JetBrains/DataGrip 2025.3.5"
 ```
+
+> This command for me)
 
 The plugin ZIP will be in:
 
