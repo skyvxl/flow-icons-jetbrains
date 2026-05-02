@@ -14,6 +14,10 @@ This is not an official Flow Icons plugin.
 - Can use a Flow Icons license key for premium icons.
 - Has a button to go back to the bundled icons.
 
+## Preview
+![GoLand with Flow Icons](docs/goland.png)
+> P.S. Im not good at java, so I dont know why not all icons are supported. If you know how to fix it, I'd appreciate your PR. 
+
 ## Install
 
 Build or download the plugin ZIP, then install it in your IDE:
