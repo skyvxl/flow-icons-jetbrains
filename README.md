@@ -1,97 +1,153 @@
 # Flow Icons for JetBrains IDEs
 
-Flow Icons for JetBrains IDEs is a small plugin for IntelliJ Platform IDEs.
+A small unofficial JetBrains IDE port of [Flow Icons](https://github.com/thang-nm/Flow-Icons).
 
-I made it because I wanted to try using my favorite VS Code icons in JetBrains IDEs too. The goal is simple: install one plugin and get Flow Icons in the Project view.
+I made it so Flow Icons can be used in GoLand, IntelliJ IDEA, WebStorm, PyCharm, PhpStorm, CLion, DataGrip, RubyMine,
+Rider-based IDEs where compatible, and other IDEs built on the IntelliJ Platform.
 
-This is not an official Flow Icons plugin.
+## What it does
 
-## What It Does
+The plugin replaces file and folder icons in the Project view with Flow Icons.
 
-- Shows Flow Icons for files and folders in JetBrains IDEs.
-- Works with the bundled free icon pack out of the box.
-- Can download updated icons from Flow Icons.
-- Can use a Flow Icons license key for premium icons.
-- Has a button to go back to the bundled icons.
+It includes a bundled icon pack, so it works right after installation. If you have a Flow Icons license key, you can add
+it in settings and download the premium pack from Flow Icons.
 
-## Preview
+The plugin supports these palettes:
+
+- `deep`
+- `deep-light`
+- `dim`
+- `dim-light`
+- `dawn`
+- `dawn-light`
+- `you`
+- `you-light`
+
+You can either pick a palette manually or leave it on `auto`.
+
+## Screenshots
+
 ![GoLand with Flow Icons](docs/goland.png)
-> P.S. Im not good at java, so I dont know why not all icons are supported. If you know how to fix it, I'd appreciate your PR. 
+
+![IntelliJ IDEA with Flow Icons](docs/intellij.png)
+
+![Flow Icons settings](docs/settings.png)
 
 ## Install
 
-Build or download the plugin ZIP, then install it in your IDE:
+Build the plugin or use an existing ZIP from:
 
 ```text
-Settings -> Plugins -> Install Plugin from Disk
+build/distributions/flow-icons-jetbrains-0.2.0.zip
 ```
 
-Choose the ZIP from:
+Then install it in the IDE:
 
 ```text
-build/distributions/flow-icons-jetbrains-0.1.0.zip
+Settings -> Plugins -> Install Plugin from Disk...
 ```
 
-Restart the IDE after install.
+Choose the ZIP and restart the IDE.
 
 ## Settings
 
 Open:
 
 ```text
-Settings -> Flow Icons
+Settings -> Other Settings -> Flow Icons
 ```
 
-You can choose a palette, add a license key, update icons, or return to bundled icons.
+From there you can set the license key, choose a palette, update icons, or switch back to the bundled icons.
 
-If you do not add a license key, the plugin uses free icons.
+If icons look stale after reinstalling the plugin, use `Use Bundled Icons` once and then `Update Icons` again.
 
-If you add a license key and click `Update Icons`, the plugin downloads premium icons.
+## Clone
+
+This repository stores icon assets in Git LFS. Install Git LFS before cloning:
+
+```powershell
+git lfs install
+git clone <repo-url>
+cd flow-icons-jetbrains
+git lfs pull
+```
+
+If you already cloned the repository and SVG or PNG files look like small text pointer files, run:
+
+```powershell
+git lfs install
+git lfs pull
+```
 
 ## Build
 
-You need:
+You need JDK 21. The Gradle wrapper is included.
 
-- JDK 21
-- Gradle
-- A local JetBrains IDE
-
-Build the plugin:
+Run tests and checks:
 
 ```powershell
-gradle buildPlugin -PlocalIdePath="C:/Program Files/JetBrains/DataGrip 2025.3.5"
+.\gradlew.bat check
 ```
 
-> This command for me)
+Build the installable plugin ZIP:
 
-The plugin ZIP will be in:
+```powershell
+.\gradlew.bat buildPlugin
+```
+
+The ZIP will be in:
 
 ```text
 build/distributions
 ```
 
-## Development
+To run the plugin in a local IDE:
 
-The bundled icons are stored inside the plugin. The plugin does not need `flow-icons-zed` at runtime.
+```powershell
+.\gradlew.bat runIde -PlocalIdePath="C:/Program Files/JetBrains/GoLand 2025.3"
+```
 
-I used `flow-icons-zed` as a working example when I started this port. Because of that, I keep a small import script in `scripts/`.
+## Updating icons
 
-The script is only for development. It helps refresh the bundled icon files and mappings from a local Flow Icons export. It is not needed by users, and it is not part of the installed plugin.
+Bundled icons live here:
 
-Normal users should only install the plugin ZIP. Developers can use the script when the bundled free icon pack needs to be updated.
+```text
+src/main/resources/flow-icons
+```
 
-The runtime update logic is inside the plugin itself. It does not run Node scripts or depend on a local `flow-icons-zed` folder.
+To refresh them from a local `flow-icons-zed` checkout:
 
-## Known Limits
+```powershell
+node scripts/import-flow-icons.cjs path/to/flow-icons-zed
+```
 
-This project is still a test port, so some icons can be different from VS Code or Zed.
+Local JetBrains-specific fixes are in:
 
-Some path-based rules may not work yet. For example, rules for files inside special folders can need extra work.
+```text
+src/main/resources/flow-icons/mapping-overrides.json
+```
 
-If you find a problem, issues and PRs are open and welcome.
+`fileNames` maps exact filenames to Flow icon IDs.
+
+`nativeFileNames` makes one filename reuse the IDE-native icon of another filename. For example, `go.sum` can reuse the
+native `go.mod` icon from GoLand.
+
+`fileGlobs` is for simple filename patterns like `*_test.go`. These are converted into fast suffix rules during import,
+so the IDE does not run regex checks for every icon.
+
+The installed plugin does not need Node.js and does not need `flow-icons-zed`.
+
+## Support Flow Icons
+
+Flow Icons itself is made by the original Flow Icons author. You can support the developer here:
+
+[https://flow-icons.pages.dev](https://flow-icons.pages.dev/)
 
 ## Credits
 
-Icon assets and icon mappings come from Flow Icons.
+Icon assets and mappings come from:
 
-This plugin is only an unofficial JetBrains IDE port.
+- [thang-nm/Flow-Icons](https://github.com/thang-nm/Flow-Icons)
+- [BenjaminHalko/flow-icons-zed](https://github.com/BenjaminHalko/flow-icons-zed)
+
+This plugin is unofficial and is not affiliated with JetBrains or the original Flow Icons project.

@@ -5,14 +5,18 @@ const fs = require("fs");
 const path = require("path");
 
 const root = path.resolve(__dirname, "..");
-const sourceDir = path.join(root, "flow-icons-zed");
+const sourceDir = path.resolve(process.argv[2] || path.join(root, "flow-icons-zed"));
 const targetDir = path.join(root, "src", "main", "resources", "flow-icons");
 const themeJsonPath = path.join(sourceDir, "icon_themes", "flow-icons.json");
+const overridesPath = path.join(targetDir, "mapping-overrides.json");
 
 const themeJson = JSON.parse(fs.readFileSync(themeJsonPath, "utf8"));
+const mappingOverrides = readJsonIfExists(overridesPath) || {};
 
+rmWithRetry(targetDir);
 fs.mkdirSync(path.join(targetDir, "mappings"), { recursive: true });
 fs.cpSync(path.join(sourceDir, "icons"), path.join(targetDir, "icons"), { recursive: true });
+fs.writeFileSync(overridesPath, `${JSON.stringify(mappingOverrides, null, 2)}\n`, "utf8");
 
 for (const theme of themeJson.themes || []) {
   const folder = extractThemeFolder(theme);
@@ -30,12 +34,13 @@ for (const theme of themeJson.themes || []) {
     putIconPath(properties, `file.suffix.${normalizeKey(suffix)}`, theme.file_icons, iconId);
   }
 
+  applyOverrides(properties, folder);
+
   for (const [name, icons] of Object.entries(theme.named_directory_icons || {})) {
     putPath(properties, `dir.name.${normalizeKey(name)}`, icons?.collapsed);
   }
 
   const lines = [
-    "# Generated from flow-icons-zed/icon_themes/flow-icons.json",
     ...[...properties.entries()]
       .sort(([left], [right]) => left.localeCompare(right))
       .map(([key, value]) => `${escapeProperty(key)}=${escapeProperty(value)}`),
@@ -63,6 +68,49 @@ function putIconPath(properties, key, fileIcons, iconId) {
 function putPath(properties, key, iconPath) {
   if (!iconPath) return;
   properties.set(key, "/flow-icons/" + iconPath.replace(/\\/g, "/").replace(/^\.?\//, ""));
+}
+
+function applyOverrides(properties, folder) {
+  for (const [fileName, iconId] of Object.entries(mappingOverrides.fileNames || {})) {
+    putPath(properties, `file.stem.${normalizeKey(fileName)}`, iconPathForId(folder, iconId));
+  }
+
+  for (const [fileName, targetFileName] of Object.entries(mappingOverrides.nativeFileNames || {})) {
+    properties.set(`file.native.${normalizeKey(fileName)}`, normalizeKey(targetFileName));
+  }
+
+  for (const [glob, iconId] of Object.entries(mappingOverrides.fileGlobs || {})) {
+    const tail = tailFromFileGlob(glob);
+    if (tail) {
+      putPath(properties, `file.tail.${tail}`, iconPathForId(folder, iconId));
+    }
+  }
+}
+
+function iconPathForId(folder, iconId) {
+  for (const extension of [".svg", ".png"]) {
+    const iconPath = path.join(targetDir, "icons", folder, `${iconId}${extension}`);
+    if (fs.existsSync(iconPath)) {
+      return `icons/${folder}/${iconId}${extension}`;
+    }
+  }
+  return null;
+}
+
+function tailFromFileGlob(glob) {
+  let pattern = normalizeKey(glob).replace(/\\/g, "/");
+  if (pattern.includes("/")) return null;
+  while (pattern.startsWith("*")) {
+    pattern = pattern.slice(1);
+  }
+  if (!pattern || pattern.includes("*") || pattern.includes("?") || pattern.includes("[")) {
+    return null;
+  }
+  return pattern;
+}
+
+function readJsonIfExists(filePath) {
+  return fs.existsSync(filePath) ? JSON.parse(fs.readFileSync(filePath, "utf8")) : null;
 }
 
 function escapeProperty(value) {

@@ -1,11 +1,11 @@
 package dev.flowicons.jetbrains;
 
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
-import com.intellij.openapi.application.PathManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,6 +20,10 @@ public final class FlowIconsSettings implements PersistentStateComponent<FlowIco
 
     public static FlowIconsSettings getInstance() {
         return ApplicationManager.getApplication().getService(FlowIconsSettings.class);
+    }
+
+    private static String nullToEmpty(String value) {
+        return value == null ? "" : value;
     }
 
     @Override
@@ -99,9 +103,5 @@ public final class FlowIconsSettings implements PersistentStateComponent<FlowIco
         public String installedVersion = "";
         public String lastUpdateStatus = "Using bundled demo icons.";
         public long iconPackStamp = System.currentTimeMillis();
-    }
-
-    private static String nullToEmpty(String value) {
-        return value == null ? "" : value;
     }
 }

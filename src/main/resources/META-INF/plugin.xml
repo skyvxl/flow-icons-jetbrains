@@ -11,6 +11,8 @@
                 instance="dev.flowicons.jetbrains.FlowIconsConfigurable"
                 id="dev.flowicons.jetbrains.settings"
                 displayName="Flow Icons"/>
+        <iconProvider implementation="dev.flowicons.jetbrains.FlowIconsPsiIconProvider" order="first"/>
         <fileIconProvider implementation="dev.flowicons.jetbrains.FlowIconsFileIconProvider" order="first"/>
+        <projectViewNodeDecorator implementation="dev.flowicons.jetbrains.FlowIconsProjectViewNodeDecorator"/>
     </extensions>
 </idea-plugin>

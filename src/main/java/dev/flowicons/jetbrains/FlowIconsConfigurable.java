@@ -10,16 +10,8 @@ import com.intellij.ui.components.JBLabel;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import javax.swing.*;
+import java.awt.*;
 
 public final class FlowIconsConfigurable implements Configurable {
     private static final String[] THEMES = {
@@ -29,13 +21,37 @@ public final class FlowIconsConfigurable implements Configurable {
             "dim",
             "dim-light",
             "dawn",
-            "dawn-light"
+            "dawn-light",
+            "you",
+            "you-light"
     };
 
     private JPanel panel;
     private JPasswordField licenseField;
     private JComboBox<String> themeComboBox;
     private JLabel statusLabel;
+
+    private static GridBagConstraints constraints(int row, int column) {
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridx = column;
+        constraints.gridy = row;
+        constraints.insets = new Insets(6, 6, 6, 6);
+        constraints.weighty = 0.0;
+        return constraints;
+    }
+
+    private static void updateStatusLabel(@Nullable JLabel label, FlowIconsSettings settings) {
+        if (label != null) {
+            label.setText(statusText(settings));
+        }
+    }
+
+    private static String statusText(FlowIconsSettings settings) {
+        String source = settings.hasInstalledPack() ? "installed pack" : "bundled demo pack";
+        String version = settings.getInstalledVersion().isBlank() ? "" : " (" + settings.getInstalledVersion() + ")";
+        String status = settings.getLastUpdateStatus().isBlank() ? "" : " - " + settings.getLastUpdateStatus();
+        return source + version + status;
+    }
 
     @Override
     public @Nls(capitalization = Nls.Capitalization.Title) String getDisplayName() {
@@ -147,29 +163,7 @@ public final class FlowIconsConfigurable implements Configurable {
         panel.add(component, fieldConstraints);
     }
 
-    private static GridBagConstraints constraints(int row, int column) {
-        GridBagConstraints constraints = new GridBagConstraints();
-        constraints.gridx = column;
-        constraints.gridy = row;
-        constraints.insets = new Insets(6, 6, 6, 6);
-        constraints.weighty = 0.0;
-        return constraints;
-    }
-
     private String licenseText() {
         return new String(licenseField.getPassword()).trim();
-    }
-
-    private static void updateStatusLabel(@Nullable JLabel label, FlowIconsSettings settings) {
-        if (label != null) {
-            label.setText(statusText(settings));
-        }
-    }
-
-    private static String statusText(FlowIconsSettings settings) {
-        String source = settings.hasInstalledPack() ? "installed pack" : "bundled demo pack";
-        String version = settings.getInstalledVersion().isBlank() ? "" : " (" + settings.getInstalledVersion() + ")";
-        String status = settings.getLastUpdateStatus().isBlank() ? "" : " - " + settings.getLastUpdateStatus();
-        return source + version + status;
     }
 }

@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "dev.flowicons"
-version = "0.1.0"
+version = "0.2.0"
 
 repositories {
     mavenCentral()
@@ -16,12 +16,15 @@ repositories {
 dependencies {
     implementation files("libs/gson.jar")
     implementation files("libs/brotli.dec.jar")
+    testImplementation "org.junit.jupiter:junit-jupiter:5.10.2"
+    testRuntimeOnly "junit:junit:4.13.2"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 
     intellijPlatform {
         if (project.hasProperty("localIdePath")) {
             local(localIdePath)
         } else {
-            intellijIdeaCommunity("2025.3")
+            intellijIdea("2025.3")
         }
     }
 }
@@ -50,7 +53,11 @@ intellijPlatform {
         }
 
         changeNotes = """
-            Initial JetBrains IDE port using the Flow Icons Zed icon mappings.
+            Add SVG icon pack support, all Flow Icons palettes, PSI icon provider coverage, and generated mapping overrides.
         """.stripIndent().trim()
     }
+}
+
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
 }
