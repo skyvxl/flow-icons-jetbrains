@@ -28,6 +28,9 @@ jobs:
       - name: Make Gradle wrapper executable
         run: chmod +x gradlew
 
+      - name: Check plugin
+        run: ./gradlew check verifyPlugin
+
       - name: Build plugin
         run: ./gradlew buildPlugin
 

@@ -119,14 +119,14 @@ final class FlowIconsThemeMapping {
     }
 
     private String fileIconPathFor(String lowerName) {
-        String nativeAlias = nativeFileAliases.get(lowerName);
-        if (nativeAlias != null) {
-            return NATIVE_FILE_PREFIX + nativeAlias;
-        }
-
         String exact = fileStems.get(lowerName);
         if (exact != null) {
             return exact;
+        }
+
+        String nativeAlias = nativeFileAliases.get(lowerName);
+        if (nativeAlias != null) {
+            return NATIVE_FILE_PREFIX + nativeAlias;
         }
 
         for (String tail : tailsByLength) {

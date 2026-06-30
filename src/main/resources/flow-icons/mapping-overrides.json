@@ -1,10 +1,5 @@
 {
   "fileNames": {},
-  "nativeFileNames": {
-    "go.mod": "go.mod",
-    "go.sum": "go.mod"
-  },
-  "fileGlobs": {
-    "*_test.go": "go"
-  }
+  "nativeFileNames": {},
+  "fileGlobs": {}
 }

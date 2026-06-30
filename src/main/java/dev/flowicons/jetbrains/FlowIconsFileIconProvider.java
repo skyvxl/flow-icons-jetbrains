@@ -5,8 +5,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.util.Iconable;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.ui.JBColor;
 import com.intellij.util.IconUtil;
-import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,8 +33,10 @@ public final class FlowIconsFileIconProvider implements FileIconProvider {
     private static final Map<String, FlowIconsThemeMapping> MAPPINGS = new ConcurrentHashMap<>();
     private static final Map<String, Icon> ICON_CACHE = new ConcurrentHashMap<>();
     private static final ThreadLocal<Boolean> NATIVE_ICON_LOOKUP = ThreadLocal.withInitial(() -> false);
+    private static volatile CachedPackLocation cachedPackLocation;
 
     public static void clearAllCaches() {
+        cachedPackLocation = null;
         MAPPINGS.clear();
         ICON_CACHE.clear();
     }
@@ -43,7 +45,7 @@ public final class FlowIconsFileIconProvider implements FileIconProvider {
         if (!FlowIconsSettings.THEME_AUTO.equals(configuredTheme)) {
             return configuredTheme;
         }
-        return UIUtil.isUnderDarcula() ? DARK_THEME : LIGHT_THEME;
+        return JBColor.isBright() ? LIGHT_THEME : DARK_THEME;
     }
 
     private static @Nullable Icon loadCachedIcon(PackLocation packLocation, FlowIconsSettings settings, String iconPath) {
@@ -58,7 +60,6 @@ public final class FlowIconsFileIconProvider implements FileIconProvider {
                 return FlowIconsThemeMapping.empty();
             }
             properties.load(stream);
-            FlowIconsIconPack.applyBundledMappingOverrides(properties, iconId -> packLocation.iconPath(theme, iconId));
         } catch (IOException ignored) {
             return FlowIconsThemeMapping.empty();
         }
@@ -198,11 +199,18 @@ public final class FlowIconsFileIconProvider implements FileIconProvider {
 
     private interface PackLocation {
         static PackLocation current(FlowIconsSettings settings) {
-            Path installedPack = settings.getInstalledPackDir();
-            if (settings.hasInstalledPack()) {
-                return new FileSystemPackLocation(installedPack);
+            long stamp = settings.getIconPackStamp();
+            CachedPackLocation cached = cachedPackLocation;
+            if (cached != null && cached.stamp() == stamp) {
+                return cached.location();
             }
-            return BuiltInPackLocation.INSTANCE;
+
+            Path installedPack = settings.getInstalledPackDir();
+            PackLocation location = settings.hasInstalledPack()
+                    ? new FileSystemPackLocation(installedPack)
+                    : BuiltInPackLocation.INSTANCE;
+            cachedPackLocation = new CachedPackLocation(stamp, location);
+            return location;
         }
 
         @Nullable InputStream openMapping(String theme) throws IOException;
@@ -212,6 +220,9 @@ public final class FlowIconsFileIconProvider implements FileIconProvider {
         @Nullable String iconPath(String theme, String iconId);
 
         String cachePrefix(long stamp);
+    }
+
+    private record CachedPackLocation(long stamp, PackLocation location) {
     }
 
     private record FileSystemPackLocation(Path root) implements PackLocation {

@@ -5,3 +5,5 @@ out/
 .idea/
 .intellijPlatform
 .tmp
+.jdks/
+bin

@@ -6,8 +6,6 @@ import com.intellij.ide.projectView.ProjectViewNodeDecorator;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.util.Iconable;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.packageDependencies.ui.PackageDependenciesNode;
-import com.intellij.ui.ColoredTreeCellRenderer;
 
 import javax.swing.*;
 
@@ -27,7 +25,4 @@ public final class FlowIconsProjectViewNodeDecorator implements ProjectViewNodeD
         }
     }
 
-    @Override
-    public void decorate(PackageDependenciesNode node, ColoredTreeCellRenderer cellRenderer) {
-    }
 }

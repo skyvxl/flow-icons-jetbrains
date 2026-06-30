@@ -49,15 +49,30 @@ final class FlowIconsThemeMappingTest {
     }
 
     @Test
-    void matchesNativeFileAliasesBeforeFlowRules() {
+    void matchesExactFlowRulesBeforeNativeFileAliases() {
         Properties properties = new Properties();
         properties.setProperty("default.file", "default-file");
+        properties.setProperty("file.stem.go.mod", "go-mod-flow-icon");
+        properties.setProperty("file.stem.go.sum", "go-sum-flow-icon");
         properties.setProperty("file.suffix.sum", "sum-file");
+        properties.setProperty("file.native.go.mod", "go.mod");
+        properties.setProperty("file.native.go.sum", "go.mod");
+
+        FlowIconsThemeMapping mapping = FlowIconsThemeMapping.from(properties);
+
+        assertEquals("go-mod-flow-icon", mapping.iconPathFor("go.mod", "C:/project/go.mod", false));
+        assertEquals("go-sum-flow-icon", mapping.iconPathFor("go.sum", "C:/project/go.sum", false));
+        assertEquals("sum-file", mapping.iconPathFor("deps.sum", "C:/project/deps.sum", false));
+    }
+
+    @Test
+    void fallsBackToNativeFileAliasesWhenFlowRuleIsMissing() {
+        Properties properties = new Properties();
+        properties.setProperty("default.file", "default-file");
         properties.setProperty("file.native.go.sum", "go.mod");
 
         FlowIconsThemeMapping mapping = FlowIconsThemeMapping.from(properties);
 
         assertEquals(FlowIconsThemeMapping.NATIVE_FILE_PREFIX + "go.mod", mapping.iconPathFor("go.sum", "C:/project/go.sum", false));
-        assertEquals("sum-file", mapping.iconPathFor("deps.sum", "C:/project/deps.sum", false));
     }
 }

@@ -73,7 +73,7 @@ public final class FlowIconsConfigurable implements Configurable {
             try {
                 apply();
             } catch (ConfigurationException e) {
-                Messages.showErrorDialog(panel, e.getMessage(), "Flow Icons");
+                Messages.showErrorDialog(panel, e.getLocalizedMessage(), "Flow Icons");
                 return;
             }
 

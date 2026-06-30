@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "dev.flowicons"
-version = "0.2.0"
+version = "0.3.0"
 
 repositories {
     mavenCentral()
@@ -14,8 +14,8 @@ repositories {
 }
 
 dependencies {
-    implementation files("libs/gson.jar")
-    implementation files("libs/brotli.dec.jar")
+    implementation "com.google.code.gson:gson:2.13.1"
+    implementation "org.brotli:dec:0.1.2"
     testImplementation "org.junit.jupiter:junit-jupiter:5.10.2"
     testRuntimeOnly "junit:junit:4.13.2"
     testRuntimeOnly "org.junit.platform:junit-platform-launcher"
@@ -55,6 +55,16 @@ intellijPlatform {
         changeNotes = """
             Add SVG icon pack support, all Flow Icons palettes, PSI icon provider coverage, and generated mapping overrides.
         """.stripIndent().trim()
+    }
+
+    pluginVerification {
+        ides {
+            if (project.hasProperty("localIdePath")) {
+                local(localIdePath)
+            } else {
+                recommended()
+            }
+        }
     }
 }
 

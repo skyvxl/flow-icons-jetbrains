@@ -38,7 +38,7 @@ You can either pick a palette manually or leave it on `auto`.
 Build the plugin or use an existing ZIP from:
 
 ```text
-build/distributions/flow-icons-jetbrains-0.2.0.zip
+build/distributions/flow-icons-jetbrains-*.zip
 ```
 
 Then install it in the IDE:

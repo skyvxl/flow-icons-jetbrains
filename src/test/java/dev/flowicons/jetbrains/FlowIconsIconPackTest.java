@@ -9,14 +9,53 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Properties;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 final class FlowIconsIconPackTest {
     @TempDir
     Path tempDir;
+
+    private static void writeIcons(Path folder) throws IOException {
+        Files.createDirectories(folder);
+        for (String icon : List.of("file", "folder_gray", "docker", "go", "test_ts", "folder_src")) {
+            Files.writeString(folder.resolve(icon + ".svg"), "<svg viewBox=\"0 0 16 16\"/>");
+        }
+    }
+
+    private static String themeJson() {
+        return """
+                {
+                  "fileNames": {
+                    "Dockerfile": "docker"
+                  },
+                  "fileExtensions": {
+                    "go": "go",
+                    "test.ts": "test_ts"
+                  },
+                  "folderNames": {
+                    "src": "folder_src"
+                  }
+                }
+                """;
+    }
+
+    private static String mappingOverridesJson() {
+        return """
+                {
+                  "fileNames": {
+                  },
+                  "nativeFileNames": {
+                    "go.mod": "go.mod",
+                    "go.sum": "go.mod",
+                    "go.work": "go.work",
+                    "go.work.sum": "go.work"
+                  },
+                  "fileGlobs": {
+                    "*_test.go": "go"
+                  }
+                }
+                """;
+    }
 
     @Test
     void normalizesCurrentVsixAndZedArchivePaths() {
@@ -77,47 +116,5 @@ final class FlowIconsIconPackTest {
             assertEquals("/flow-icons/icons/" + folder + "/folder_src.svg", properties.getProperty("dir.name.src"));
             assertNotNull(properties.getProperty("file.stem.DOCKERFILE".toLowerCase()));
         }
-    }
-
-    private static void writeIcons(Path folder) throws IOException {
-        Files.createDirectories(folder);
-        for (String icon : List.of("file", "folder_gray", "docker", "go", "test_ts", "folder_src")) {
-            Files.writeString(folder.resolve(icon + ".svg"), "<svg viewBox=\"0 0 16 16\"/>");
-        }
-    }
-
-    private static String themeJson() {
-        return """
-                {
-                  "fileNames": {
-                    "Dockerfile": "docker"
-                  },
-                  "fileExtensions": {
-                    "go": "go",
-                    "test.ts": "test_ts"
-                  },
-                  "folderNames": {
-                    "src": "folder_src"
-                  }
-                }
-                """;
-    }
-
-    private static String mappingOverridesJson() {
-        return """
-                {
-                  "fileNames": {
-                  },
-                  "nativeFileNames": {
-                    "go.mod": "go.mod",
-                    "go.sum": "go.mod",
-                    "go.work": "go.work",
-                    "go.work.sum": "go.work"
-                  },
-                  "fileGlobs": {
-                    "*_test.go": "go"
-                  }
-                }
-                """;
     }
 }
